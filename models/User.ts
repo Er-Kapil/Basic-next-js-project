@@ -33,4 +33,5 @@ userSchema.pre('save',async function(next){
     next()
 })
 
-export default models.User || model<IUSer>("User", userSchema);
+const User = models.User || model<IUSer>("User", userSchema);
+export default User
