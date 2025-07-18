@@ -1,0 +1,42 @@
+import User from "@/models/User";
+import { connectTODatabase } from "@/utils/db";
+import { NextRequest, NextResponse } from "next/server";
+
+
+export async function POST(req:NextRequest){
+    try {
+        const {email,password} = await req.json();
+
+        if(!email || !password){
+            return NextResponse.json(
+                {error:"Email and password are required"},
+                {status:400}
+            )
+        }
+
+        await connectTODatabase();
+        const existingUser = await User.findOne({email})
+        if(existingUser){
+            return NextResponse.json(
+                {error:"User already registered"},
+                {status:400}
+            )
+        }
+        await User.create({
+            email,
+            password
+        })
+
+
+        return NextResponse.json(
+            {message:"User registered successfully"},
+            {status:200}
+        )
+    } catch (error) {
+        console.error("Registration error",error);
+        return NextResponse.json(
+            {error:"Failed to register user"},
+            {status:500}
+        )
+    }
+}
